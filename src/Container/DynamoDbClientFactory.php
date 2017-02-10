@@ -16,31 +16,39 @@
  * and is licensed under the MIT license.
  */
 
-use Aws\CacheInterface;
-use Aws\DoctrineCacheAdapter;
+namespace ZfrAwsUtils\Container;
+
 use Aws\DynamoDb\DynamoDbClient;
+use Aws\Middleware;
 use Aws\Sdk;
-use Doctrine\Common\Cache\ApcuCache;
-use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
-use Zend\ServiceManager\Factory\InvokableFactory;
-use ZfrAwsUtils\Container\DynamoDbClientFactory;
-use ZfrAwsUtils\Container\SdkFactory;
+use Interop\Container\ContainerInterface;
+use ZfrAwsUtils\DynamoDb\TableNamePrefixer;
 
-return [
-    'dependencies' => [
-        'aliases' => [
-            CacheInterface::class => DoctrineCacheAdapter::class,
-        ],
+/**
+ * @author Michaël Gallego
+ */
+final class DynamoDbClientFactory
+{
+    /**
+     * @param ContainerInterface $container
+     *
+     * @return DynamoDbClient
+     */
+    public function __invoke(ContainerInterface $container): DynamoDbClient
+    {
+        /** @var DynamoDbClient $dynamoDbClient */
+        $dynamoDbClient = $container->get(Sdk::class)->createDynamoDb();
 
-        'factories' => [
-            ApcuCache::class            => InvokableFactory::class,
-            DoctrineCacheAdapter::class => ConfigAbstractFactory::class,
-            DynamoDbClient::class       => DynamoDbClientFactory::class,
-            Sdk::class                  => SdkFactory::class,
-        ],
-    ],
+        // If a table name prefixer is registered, we attach it to the handler list
+        if ($container->has(TableNamePrefixer::class)) {
+            $tableNamePrefixer = $container->get(TableNamePrefixer::class);
 
-    ConfigAbstractFactory::class => [
-        DoctrineCacheAdapter::class => [ApcuCache::class],
-    ],
-];
+            $dynamoDbClient->getHandlerList()->prependInit(
+                Middleware::mapCommand($tableNamePrefixer),
+                'prefix-table'
+            );
+        }
+
+        return $dynamoDbClient;
+    }
+}
