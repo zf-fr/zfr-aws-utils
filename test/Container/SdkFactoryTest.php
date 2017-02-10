@@ -16,31 +16,35 @@
  * and is licensed under the MIT license.
  */
 
+namespace ZfrAwsUtilsTest\Container;
+
 use Aws\CacheInterface;
-use Aws\DoctrineCacheAdapter;
-use Aws\DynamoDb\DynamoDbClient;
-use Aws\Sdk;
-use Doctrine\Common\Cache\ApcuCache;
-use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
-use Zend\ServiceManager\Factory\InvokableFactory;
-use ZfrAwsUtils\Container\DynamoDbClientFactory;
+use Interop\Container\ContainerInterface;
+use PHPUnit\Framework\TestCase;
 use ZfrAwsUtils\Container\SdkFactory;
 
-return [
-    'dependencies' => [
-        'aliases' => [
-            CacheInterface::class => DoctrineCacheAdapter::class,
-        ],
+/**
+ * @author Daniel Gimenes
+ */
+final class SdkFactoryTest extends TestCase
+{
+    public function testCreatesWithCredentialCaching()
+    {
+        $container = $this->prophesize(ContainerInterface::class);
+        $cache     = $this->prophesize(CacheInterface::class);
 
-        'factories' => [
-            ApcuCache::class            => InvokableFactory::class,
-            DoctrineCacheAdapter::class => ConfigAbstractFactory::class,
-            DynamoDbClient::class       => DynamoDbClientFactory::class,
-            Sdk::class                  => SdkFactory::class,
-        ],
-    ],
+        $container->get('config')->shouldBeCalled()->willReturn([]);
+        $container->get(CacheInterface::class)->shouldBeCalled()->willReturn($cache->reveal());
 
-    ConfigAbstractFactory::class => [
-        DoctrineCacheAdapter::class => [ApcuCache::class],
-    ],
-];
+        (new SdkFactory())($container->reveal());
+    }
+
+    public function testCreatesWithoutCredentialCaching()
+    {
+        $container = $this->prophesize(ContainerInterface::class);
+
+        $container->get('config')->shouldBeCalled()->willReturn(['aws' => ['credentials' => []]]);
+
+        (new SdkFactory())($container->reveal());
+    }
+}
