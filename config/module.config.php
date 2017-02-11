@@ -19,6 +19,7 @@
 use Aws\CacheInterface;
 use Aws\DoctrineCacheAdapter;
 use Aws\DynamoDb\DynamoDbClient;
+use Aws\DynamoDb\Marshaler;
 use Aws\Sdk;
 use Doctrine\Common\Cache\ApcuCache;
 use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
@@ -36,6 +37,7 @@ return [
             ApcuCache::class            => InvokableFactory::class,
             DoctrineCacheAdapter::class => ConfigAbstractFactory::class,
             DynamoDbClient::class       => DynamoDbClientFactory::class,
+            Marshaler::class            => InvokableFactory::class,
             Sdk::class                  => SdkFactory::class,
         ],
     ],
