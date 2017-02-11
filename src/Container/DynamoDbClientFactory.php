@@ -38,10 +38,11 @@ final class DynamoDbClientFactory
     {
         /** @var DynamoDbClient $dynamoDbClient */
         $dynamoDbClient = $container->get(Sdk::class)->createDynamoDb();
+        $config         = $container->get('config')['zfr_aws_utils'] ?? [];
 
-        // If a table name prefixer is registered, we attach it to the handler list
-        if ($container->has(TableNamePrefixer::class)) {
-            $tableNamePrefixer = $container->get(TableNamePrefixer::class);
+        // If a table prefix is configured, we attach a middleware to auto prefix table names
+        if (! empty($config['dynamodb']['table_prefix'])) {
+            $tableNamePrefixer = new TableNamePrefixer($config['dynamodb']['table_prefix']);
 
             $dynamoDbClient->getHandlerList()->prependInit(
                 Middleware::mapCommand($tableNamePrefixer),
