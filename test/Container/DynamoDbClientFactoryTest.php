@@ -22,7 +22,6 @@ use Aws\Sdk;
 use Interop\Container\ContainerInterface;
 use PHPUnit\Framework\TestCase;
 use ZfrAwsUtils\Container\DynamoDbClientFactory;
-use ZfrAwsUtils\DynamoDb\TableNamePrefixer;
 
 /**
  * @author Daniel Gimenes
@@ -31,13 +30,12 @@ final class DynamoDbClientFactoryTest extends TestCase
 {
     public function testCreatesWithTablePrefixer()
     {
-        $sdk           = new Sdk(['region' => 'us-east-1', 'DynamoDb' => ['version' => '2012-08-10']]);
-        $container     = $this->prophesize(ContainerInterface::class);
-        $tablePrefixer = $this->prophesize(TableNamePrefixer::class);
+        $sdk       = new Sdk(['region' => 'us-east-1', 'DynamoDb' => ['version' => '2012-08-10']]);
+        $config    = ['zfr_aws_utils' => ['dynamodb' => ['table_prefix' => 'dev']]];
+        $container = $this->prophesize(ContainerInterface::class);
 
         $container->get(Sdk::class)->shouldBeCalled()->willReturn($sdk);
-        $container->has(TableNamePrefixer::class)->shouldBeCalled()->willReturn(true);
-        $container->get(TableNamePrefixer::class)->shouldBeCalled()->willReturn($tablePrefixer->reveal());
+        $container->get('config')->shouldBeCalled()->willReturn($config);
 
         (new DynamoDbClientFactory())($container->reveal());
     }
@@ -48,8 +46,7 @@ final class DynamoDbClientFactoryTest extends TestCase
         $container = $this->prophesize(ContainerInterface::class);
 
         $container->get(Sdk::class)->shouldBeCalled()->willReturn($sdk);
-        $container->has(TableNamePrefixer::class)->shouldBeCalled()->willReturn(false);
-        $container->get(TableNamePrefixer::class)->shouldNotBeCalled();
+        $container->get('config')->shouldBeCalled()->willReturn([]);
 
         (new DynamoDbClientFactory())($container->reveal());
     }

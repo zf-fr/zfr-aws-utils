@@ -86,7 +86,7 @@ class TableNamePrefixer
         $newRequestItems = [];
 
         foreach ($command['RequestItems'] as $tableName => $requests) {
-            $newTableName                = $this->resolveTableName($tableName);
+            $newTableName                   = $this->resolveTableName($tableName);
             $newRequestItems[$newTableName] = $requests;
         }
 
