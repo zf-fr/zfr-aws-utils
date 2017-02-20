@@ -20,12 +20,14 @@ use Aws\CacheInterface;
 use Aws\DoctrineCacheAdapter;
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\DynamoDb\Marshaler;
+use Aws\DynamoDb\WriteRequestBatch;
 use Aws\Sdk;
 use Doctrine\Common\Cache\ApcuCache;
 use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
 use Zend\ServiceManager\Factory\InvokableFactory;
 use ZfrAwsUtils\Container\DynamoDbClientFactory;
 use ZfrAwsUtils\Container\SdkFactory;
+use ZfrAwsUtils\Container\WriteRequestBatchFactory;
 
 return [
     'dependencies' => [
@@ -39,6 +41,7 @@ return [
             DynamoDbClient::class       => DynamoDbClientFactory::class,
             Marshaler::class            => InvokableFactory::class,
             Sdk::class                  => SdkFactory::class,
+            WriteRequestBatch::class    => WriteRequestBatchFactory::class,
         ],
     ],
 
