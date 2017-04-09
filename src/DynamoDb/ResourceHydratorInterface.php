@@ -2,16 +2,13 @@
 
 namespace ZfrAwsUtils\DynamoDb;
 
-use JsonSerializable;
-
 interface ResourceHydratorInterface
 {
     /**
-     * Builds a JsonSerializable resource from a DynamoDB item
+     * Builds an array from a DynamoDB item
      *
      * @param array $dynamoDbItem
-     *
-     * @return JsonSerializable
+     * @return array
      */
-    public function __invoke(array $dynamoDbItem): JsonSerializable;
+    public function __invoke(array $dynamoDbItem): array;
 }
