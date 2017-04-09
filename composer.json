@@ -22,7 +22,8 @@
     "require": {
         "php": "^7.1",
         "aws/aws-sdk-php": "^3.22",
-        "container-interop/container-interop": "^1.1",
+        "beberlei/assert": "^2.5",
+        "psr/container": "^1.0",
         "doctrine/cache": "^1.6"
     },
     "require-dev": {

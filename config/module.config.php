@@ -28,6 +28,7 @@ use Zend\ServiceManager\Factory\InvokableFactory;
 use ZfrAwsUtils\Container\DynamoDbClientFactory;
 use ZfrAwsUtils\Container\SdkFactory;
 use ZfrAwsUtils\Container\WriteRequestBatchFactory;
+use ZfrAwsUtils\DynamoDb\Pagination\DynamoDbPaginator;
 
 return [
     'dependencies' => [
@@ -39,6 +40,7 @@ return [
             ApcuCache::class            => InvokableFactory::class,
             DoctrineCacheAdapter::class => ConfigAbstractFactory::class,
             DynamoDbClient::class       => DynamoDbClientFactory::class,
+            DynamoDbPaginator::class    => ConfigAbstractFactory::class,
             Marshaler::class            => InvokableFactory::class,
             Sdk::class                  => SdkFactory::class,
             WriteRequestBatch::class    => WriteRequestBatchFactory::class,
@@ -47,5 +49,6 @@ return [
 
     ConfigAbstractFactory::class => [
         DoctrineCacheAdapter::class => [ApcuCache::class],
+        DynamoDbPaginator::class    => [DynamoDbClient::class, Marshaler::class]
     ],
 ];

@@ -16,33 +16,15 @@
  * and is licensed under the MIT license.
  */
 
-namespace ZfrAwsUtils\Container;
+namespace ZfrAwsUtils\DynamoDb;
 
-use Aws\CacheInterface;
-use Aws\Sdk;
-use Psr\Container\ContainerInterface;
-
-/**
- * @author Daniel Gimenes
- */
-final class SdkFactory
+interface ResourceHydratorInterface
 {
     /**
-     * @param ContainerInterface $container
+     * Builds an array from a DynamoDB item
      *
-     * @return Sdk
+     * @param array $dynamoDbItem
+     * @return array
      */
-    public function __invoke(ContainerInterface $container): Sdk
-    {
-        $awsConfig = $container->get('config')['aws'] ?? [];
-
-        // In development, we hard-code the credentials directly. However on production we always use instance roles,
-        // hence leaving the "credentials" property undefined. When this happen, we set up a cache so that instance
-        // credentials are not fetched from Amazon servers on each request.
-        if (! isset($awsConfig['credentials'])) {
-            $awsConfig['credentials'] = $container->get(CacheInterface::class);
-        }
-
-        return new Sdk($awsConfig);
-    }
+    public function __invoke(array $dynamoDbItem): array;
 }

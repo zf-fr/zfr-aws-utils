@@ -16,33 +16,25 @@
  * and is licensed under the MIT license.
  */
 
-namespace ZfrAwsUtils\Container;
+namespace ZfrAwsUtils\DynamoDb\Pagination;
 
-use Aws\CacheInterface;
-use Aws\Sdk;
-use Psr\Container\ContainerInterface;
-
-/**
- * @author Daniel Gimenes
- */
-final class SdkFactory
+interface CursorStrategyInterface
 {
     /**
-     * @param ContainerInterface $container
+     * Extracts the primary key from a DynamoDB item and creates a cursor
      *
-     * @return Sdk
+     * @param array $dynamoDbItem
+     *
+     * @return string
      */
-    public function __invoke(ContainerInterface $container): Sdk
-    {
-        $awsConfig = $container->get('config')['aws'] ?? [];
+    public function buildCursorFromKey(array $dynamoDbItem): string;
 
-        // In development, we hard-code the credentials directly. However on production we always use instance roles,
-        // hence leaving the "credentials" property undefined. When this happen, we set up a cache so that instance
-        // credentials are not fetched from Amazon servers on each request.
-        if (! isset($awsConfig['credentials'])) {
-            $awsConfig['credentials'] = $container->get(CacheInterface::class);
-        }
-
-        return new Sdk($awsConfig);
-    }
+    /**
+     * Builds an unmarshaled ExclusiveStartKey from a cursor
+     *
+     * @param string $cursor
+     *
+     * @return array
+     */
+    public function buildKeyFromCursor(string $cursor): array;
 }
