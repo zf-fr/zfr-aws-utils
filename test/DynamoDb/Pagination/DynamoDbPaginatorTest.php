@@ -266,7 +266,7 @@ final class DynamoDbPaginatorTest extends TestCase
         {
             public function __invoke(array $dynamoDbItem): array
             {
-               return $dynamoDbItem;
+                return $dynamoDbItem;
             }
         };
     }
