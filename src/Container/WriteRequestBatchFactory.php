@@ -21,7 +21,7 @@ namespace ZfrAwsUtils\Container;
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\DynamoDb\WriteRequestBatch;
 use Aws\Exception\AwsException;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use ZfrAwsUtils\DynamoDb\TableNamePrefixer;
 
 /**

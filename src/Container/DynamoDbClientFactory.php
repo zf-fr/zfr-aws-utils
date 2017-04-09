@@ -21,7 +21,7 @@ namespace ZfrAwsUtils\Container;
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\Middleware;
 use Aws\Sdk;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use ZfrAwsUtils\DynamoDb\TableNamePrefixer;
 
 /**

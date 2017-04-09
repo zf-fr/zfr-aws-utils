@@ -16,33 +16,13 @@
  * and is licensed under the MIT license.
  */
 
-namespace ZfrAwsUtils\Container;
+namespace ZfrAwsUtils\Exception;
 
-use Aws\CacheInterface;
-use Aws\Sdk;
-use Psr\Container\ContainerInterface;
+use InvalidArgumentException as BaseInvalidArgumentException;
 
 /**
- * @author Daniel Gimenes
+ * @author Michaël Gallego
  */
-final class SdkFactory
+class InvalidArgumentException extends BaseInvalidArgumentException implements ExceptionInterface
 {
-    /**
-     * @param ContainerInterface $container
-     *
-     * @return Sdk
-     */
-    public function __invoke(ContainerInterface $container): Sdk
-    {
-        $awsConfig = $container->get('config')['aws'] ?? [];
-
-        // In development, we hard-code the credentials directly. However on production we always use instance roles,
-        // hence leaving the "credentials" property undefined. When this happen, we set up a cache so that instance
-        // credentials are not fetched from Amazon servers on each request.
-        if (! isset($awsConfig['credentials'])) {
-            $awsConfig['credentials'] = $container->get(CacheInterface::class);
-        }
-
-        return new Sdk($awsConfig);
-    }
 }
