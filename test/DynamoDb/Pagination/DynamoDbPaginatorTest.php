@@ -264,22 +264,9 @@ final class DynamoDbPaginatorTest extends TestCase
     {
         return new class implements ResourceHydratorInterface
         {
-            public function __invoke(array $dynamoDbItem): JsonSerializable
+            public function __invoke(array $dynamoDbItem): array
             {
-                return new class ($dynamoDbItem) implements JsonSerializable
-                {
-                    private $dynamoDbItem;
-
-                    public function __construct(array $dynamoDbItem)
-                    {
-                        $this->dynamoDbItem = $dynamoDbItem;
-                    }
-
-                    public function jsonSerialize()
-                    {
-                        return $this->dynamoDbItem;
-                    }
-                };
+               return $dynamoDbItem;
             }
         };
     }
