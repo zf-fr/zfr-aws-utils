@@ -21,11 +21,9 @@ namespace ZfrAwsUtilsTest\DynamoDb\Pagination;
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\DynamoDb\Marshaler;
 use Aws\Result;
-use JsonSerializable;
 use PHPUnit\Framework\TestCase;
 use ZfrAwsUtils\DynamoDb\Pagination\CursorStrategyInterface;
 use ZfrAwsUtils\DynamoDb\Pagination\DynamoDbPaginator;
-use ZfrAwsUtils\DynamoDb\ResourceHydratorInterface;
 
 /**
  * @author Daniel Gimenes
@@ -75,8 +73,7 @@ final class DynamoDbPaginatorTest extends TestCase
             $query,
             3,
             DynamoDbPaginator::ORDER_ASC,
-            $this->getCursorStrategy(),
-            $this->getResourceHydrator()
+            $this->getCursorStrategy()
         );
 
         $this->assertCount(3, $paginationResult->getChildrenResources());
@@ -127,7 +124,6 @@ final class DynamoDbPaginatorTest extends TestCase
             3,
             DynamoDbPaginator::ORDER_ASC,
             $this->getCursorStrategy(),
-            $this->getResourceHydrator(),
             '10003-3',
             DynamoDbPaginator::DIRECTION_NEXT
         );
@@ -181,7 +177,6 @@ final class DynamoDbPaginatorTest extends TestCase
             3,
             DynamoDbPaginator::ORDER_ASC,
             $this->getCursorStrategy(),
-            $this->getResourceHydrator(),
             '10004-4',
             DynamoDbPaginator::DIRECTION_PREVIOUS
         );
@@ -225,8 +220,7 @@ final class DynamoDbPaginatorTest extends TestCase
             $query,
             3,
             DynamoDbPaginator::ORDER_DESC,
-            $this->getCursorStrategy(),
-            $this->getResourceHydrator()
+            $this->getCursorStrategy()
         );
 
         $this->assertEmpty($paginationResult->getChildrenResources());
@@ -253,20 +247,6 @@ final class DynamoDbPaginatorTest extends TestCase
                     'created_at'  => (int) reset($cursorParts),
                     'id'          => end($cursorParts),
                 ];
-            }
-        };
-    }
-
-    /**
-     * @return ResourceHydratorInterface
-     */
-    private function getResourceHydrator()
-    {
-        return new class implements ResourceHydratorInterface
-        {
-            public function __invoke(array $dynamoDbItem): array
-            {
-                return $dynamoDbItem;
             }
         };
     }

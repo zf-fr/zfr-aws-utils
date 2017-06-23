@@ -22,7 +22,6 @@ use Assert\Assertion;
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\DynamoDb\Marshaler;
 use Aws\Result;
-use ZfrAwsUtils\DynamoDb\ResourceHydratorInterface;
 use ZfrAwsUtils\Exception\InvalidArgumentException;
 
 /**
@@ -60,7 +59,6 @@ class DynamoDbPaginator
      * @param int                       $limit
      * @param string                    $order
      * @param CursorStrategyInterface   $cursorStrategy
-     * @param ResourceHydratorInterface $resourceHydrator
      * @param string|null               $cursor
      * @param string|null               $direction
      *
@@ -71,7 +69,6 @@ class DynamoDbPaginator
         int $limit,
         string $order,
         CursorStrategyInterface $cursorStrategy,
-        ResourceHydratorInterface $resourceHydrator,
         string $cursor = null,
         string $direction = null
     ): PaginationResult {
@@ -85,11 +82,7 @@ class DynamoDbPaginator
         if (null === $cursor) {
             $result = $this->runQuery($query, $limit);
 
-            return new PaginationResult(
-                $this->hydrateResources($resourceHydrator, $result),
-                null,
-                $this->buildCursorFromLastItem($cursorStrategy, $result)
-            );
+            return new PaginationResult($this->unmarshalResources($result), null, $this->buildCursorFromLastItem($cursorStrategy, $result));
         }
 
         // Otherwise, set exclusive start key from cursor
@@ -102,7 +95,7 @@ class DynamoDbPaginator
             $result = $this->runQuery($query, $limit);
 
             return new PaginationResult(
-                array_reverse($this->hydrateResources($resourceHydrator, $result)),
+                array_reverse($this->unmarshalResources($result)),
                 $this->buildCursorFromLastItem($cursorStrategy, $result),
                 $this->buildCursorFromFirstItem($cursorStrategy, $result)
             );
@@ -112,7 +105,7 @@ class DynamoDbPaginator
             $result = $this->runQuery($query, $limit);
 
             return new PaginationResult(
-                $this->hydrateResources($resourceHydrator, $result),
+                $this->unmarshalResources($result),
                 $this->buildCursorFromFirstItem($cursorStrategy, $result),
                 $this->buildCursorFromLastItem($cursorStrategy, $result)
             );
@@ -140,15 +133,13 @@ class DynamoDbPaginator
     }
 
     /**
-     * @param ResourceHydratorInterface $resourceHydrator
-     * @param Result                    $result
-     *
+     * @param Result $result
      * @return array
      */
-    private function hydrateResources(ResourceHydratorInterface $resourceHydrator, Result $result): array
+    private function unmarshalResources(Result $result): array
     {
-        return array_map(function (array $item) use ($resourceHydrator) {
-            return $resourceHydrator($this->marshaler->unmarshalItem($item));
+        return array_map(function (array $item) {
+            return $this->marshaler->unmarshalItem($item);
         }, $result->get('Items'));
     }
 
