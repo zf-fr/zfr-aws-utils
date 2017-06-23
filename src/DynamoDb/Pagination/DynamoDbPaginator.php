@@ -82,7 +82,11 @@ class DynamoDbPaginator
         if (null === $cursor) {
             $result = $this->runQuery($query, $limit);
 
-            return new PaginationResult($this->unmarshalResources($result), null, $this->buildCursorFromLastItem($cursorStrategy, $result));
+            return new PaginationResult(
+                $this->unmarshalResources($result),
+                null,
+                $this->buildCursorFromLastItem($cursorStrategy, $result)
+            );
         }
 
         // Otherwise, set exclusive start key from cursor
