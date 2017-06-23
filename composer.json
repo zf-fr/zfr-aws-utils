@@ -29,7 +29,7 @@
     "require-dev": {
         "malukenho/docheader": "^0.1.5",
         "phpunit/phpunit": "^6.0",
-        "squizlabs/php_codesniffer": "dev-master",
+        "squizlabs/php_codesniffer": "^2.7",
         "zendframework/zend-coding-standard": "^1.0",
         "zendframework/zend-servicemanager": "^3.2"
     },
